@@ -47,7 +47,6 @@ async def analyze_with_gpt(complaint_input: ComplaintInput):
             max_tokens=30,
         )
         classification_name = response.choices[0].text.strip()
-        classification_name = response.choices[0].text.strip()
         classification = filter_classification(items, classification_name)
         classification_name = classification['description']
         analysis = {

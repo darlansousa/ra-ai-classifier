@@ -20,6 +20,11 @@ def get_ai_commands_collection():
 
 
 def analysis_helper(analysis) -> dict:
+    try:
+        confirmed = analysis.get("confirmed")
+    except AttributeError:
+        confirmed = False
+
     return {
         "id": str(analysis["_id"]),
         "analyser": analysis["analyser"],
@@ -27,7 +32,8 @@ def analysis_helper(analysis) -> dict:
         "classification": analysis["classification"],
         "complaint_id": analysis["complaint_id"],
         "complaint_title": analysis["complaint_title"],
-        "complaint_description": analysis["complaint_description"]
+        "complaint_description": analysis["complaint_description"],
+        "confirmed": confirmed
     }
 
 

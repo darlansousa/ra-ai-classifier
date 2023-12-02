@@ -11,6 +11,7 @@ class AnalysisSchema(BaseModel):
     complaint_id: str = Field(...)
     complaint_title: str = Field(...)
     complaint_description: str = Field(...)
+    confirmed: bool = Field(...)
 
     class Config:
         schema_extra = {
@@ -21,6 +22,7 @@ class AnalysisSchema(BaseModel):
                 "complaint_id": "XGABDCRT",
                 "complaint_title": "text",
                 "complaint_description": "text",
+                "confirmed": True
             }
         }
 
@@ -32,6 +34,7 @@ class InsertOrUpdateAnalysisModel(BaseModel):
     complaint_id: Optional[str]
     complaint_title: Optional[str]
     complaint_description: Optional[str]
+    confirmed: Optional[bool]
 
     class Config:
         schema_extra = {

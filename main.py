@@ -6,7 +6,7 @@ from ai.openai.functions import analyze_with_gpt
 
 from ai.routes.analysis import router as AnalysisRouter
 from ai.valentini.functions import analyze_with_valentini
-from db.functions.analysis import retrieve_analysis, retrieve_all_analysis
+from db.functions.analysis import retrieve_all_analysis, confirm_analysis, retrieve_analysis_by
 from db.model.response import ResponseModel, ErrorResponseModel
 
 app = FastAPI()
@@ -27,7 +27,13 @@ async def get_all_analysis_data():
 
 @app.get("/analysis/{id}", response_description="get analysis")
 async def get_analysis_data_by(id: str):
-    analysis = await retrieve_analysis(id)
+    analysis = await retrieve_analysis_by(id)
+    return ResponseModel(analysis, "Analysis")
+
+
+@app.put("/analysis/{id}/confirm", response_description="get analysis")
+async def patch_analysis_data_by(id: str):
+    analysis = await confirm_analysis(id)
     return ResponseModel(analysis, "Analysis")
 
 
@@ -46,10 +52,7 @@ async def classify(method: str, complaint_input: ComplaintInput):
                 "title": f"{complaint_input.title}",
                 "description": f"{complaint_input.description}"
             },
-            "category": {
-                "id": int(category['dash_id']),
-                "description": category['description']
-            },
+            "category": category,
             "method": f"{method}",
             "model": f"{os.getenv('OPENAI_API_MODEL')}"
         }

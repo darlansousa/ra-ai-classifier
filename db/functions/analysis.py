@@ -44,6 +44,17 @@ async def update_analysis(id_analysis: str, data: dict):
         return False
 
 
+async def confirm_analysis(id_analysis: str):
+    analysis = await get_analysis_collection().find_one({"complaint_id": id_analysis})
+    if analysis:
+        updated_analysis = await get_analysis_collection().update_one(
+            {"_id": ObjectId(analysis['_id'])}, {"$set": {"confirmed": True}}
+        )
+        if updated_analysis:
+            return True
+        return False
+
+
 async def delete_analysis(id_analysis: str):
     analysis = await get_analysis_collection().find_one({"_id": ObjectId(id_analysis)})
     if analysis:
