@@ -11,6 +11,9 @@ async def retrieve_all_analysis():
 
 
 async def add_analysis(analysis_data: dict) -> dict:
+    existent = await retrieve_analysis_by(analysis_data['complaint_id'])
+    if existent:
+        return existent
     analysis = await get_analysis_collection().insert_one(analysis_data)
     new_analysis = await get_analysis_collection().find_one({"_id": analysis.inserted_id})
     return analysis_helper(new_analysis)
@@ -18,6 +21,12 @@ async def add_analysis(analysis_data: dict) -> dict:
 
 async def retrieve_analysis(id_analysis: str) -> dict:
     analysis = await get_analysis_collection().find_one({"_id": ObjectId(id_analysis)})
+    if analysis:
+        return analysis_helper(analysis)
+
+
+async def retrieve_analysis_by(complaint_id: str) -> dict:
+    analysis = await get_analysis_collection().find_one({"complaint_id": complaint_id})
     if analysis:
         return analysis_helper(analysis)
 

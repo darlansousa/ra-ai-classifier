@@ -39,10 +39,11 @@ def ai_commands_helper(command) -> dict:
     }
 
 
-def classification_helper(command) -> dict:
+def classification_helper(classification) -> dict:
     return {
-        "dash_id": command["dash_id"],
-        "description": command["description"]
+        "dash_id": classification["dash_id"],
+        "name": classification['name'],
+        "description": classification["description"]
     }
 
 

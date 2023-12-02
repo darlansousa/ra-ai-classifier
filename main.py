@@ -2,11 +2,12 @@ import os
 from fastapi import FastAPI, HTTPException
 
 from ai.model.complaint_input import ComplaintInput
-from ai.openai.functions import analyze
+from ai.openai.functions import analyze_with_gpt
 
 from ai.routes.analysis import router as AnalysisRouter
+from ai.valentini.functions import analyze_with_valentini
 from db.functions.analysis import retrieve_analysis, retrieve_all_analysis
-from db.model.response import ResponseModel
+from db.model.response import ResponseModel, ErrorResponseModel
 
 app = FastAPI()
 
@@ -35,16 +36,35 @@ async def classify(method: str, complaint_input: ComplaintInput):
     if complaint_input.title is None or complaint_input.description is None:
         raise HTTPException(status_code=404, detail="Invalid body")
     if method == "chat-gpt":
-        category = await analyze(complaint_input)
+        category = await analyze_with_gpt(complaint_input)
+        if type(category) is TypeError:
+            return ErrorResponseModel(category, "500", category)
+
         return {
             "analyzed_item": {
                 "id": f"{complaint_input.id}",
                 "title": f"{complaint_input.title}",
                 "description": f"{complaint_input.description}"
             },
-            "category": f"{category}",
+            "category": {
+                "id": int(category['dash_id']),
+                "description": category['description']
+            },
             "method": f"{method}",
             "model": f"{os.getenv('OPENAI_API_MODEL')}"
+        }
+
+    if method == "valentini":
+        category = await analyze_with_valentini(complaint_input)
+        return {
+            "analyzed_item": {
+                "id": f"{complaint_input.id}",
+                "title": f"{complaint_input.title}",
+                "description": f"{complaint_input.description}"
+            },
+            "category": category,
+            "method": "valentini",
+            "model": "valentini"
         }
 
     raise HTTPException(status_code=404, detail="Method not found")
