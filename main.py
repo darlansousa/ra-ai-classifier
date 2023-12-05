@@ -1,5 +1,6 @@
 import os
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 
 from ai.model.complaint_input import ComplaintInput
 from ai.openai.functions import analyze_with_gpt
@@ -10,6 +11,20 @@ from db.functions.analysis import retrieve_all_analysis, confirm_analysis, retri
 from db.model.response import ResponseModel, ErrorResponseModel
 
 app = FastAPI()
+
+origins = [
+    "http://localhost",
+    "http://localhost:3001",
+    "http://localhost:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(AnalysisRouter, tags=["Analysis"], prefix="/analysis")
 
